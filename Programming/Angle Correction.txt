@@ -1,0 +1,14 @@
+The objects are projected on a perpendicular plane to the camera. But it could be at an angle. As such the plane would also have an angle. 
+
+The users, when drawing on the air, might not be drawing relative to that plane, it would result in the drawing being oriented.
+
+We then need to correct that orientation and replace it to the plane.
+
+For that task, there is multiple problematics :
+	- Defining what the angle of the camera is
+	- Defining what the angle of the drawing is (relative to the camera)
+	- Apply transformation to the drawing to replace it
+
+There is the need to do research for that question.
+
+The first point might be resolved later as it would be really hard to define from the camera's point of view.
