@@ -31,3 +31,5 @@ class Camera():
         self.cam.release()
         return self
         
+
+        
