@@ -29,24 +29,26 @@ class Hand():
         BottomRight = Point.Point([frame_shape[0], frame_shape[1]],frame_shape)
         
         self.bounding_box_points = [TopLeft, BottomRight]
+        
+        self.handPath = Point.Point([0,0],frame_shape)
     
-    def process(self, frame):
+    def process(self, frame, time):
         
         self.total_loop += 1
         if self.cropping:
-            return self.processCrop(frame)
+            return self.processCrop(frame, time)
         
-        return self.processFull(frame)
+        return self.processFull(frame,time)
     
     
-    def processCrop(self, frame):
+    def processCrop(self, frame, time):
         bb_estimate = self.findNextBoundingBox()
         offset = 20
         hasLandmark = []
         
         while not hasLandmark and offset < 50:
             cropFrame, box = self.cropFrame(frame, bb_estimate, offset)
-            
+            # cropFrame = cv2.resize(cropFrame, (192, 192))
             try:
                 BGR_cropFrame = cv2.cvtColor(cropFrame, cv2.COLOR_BGR2RGB)
                 hand_landmark = self.Hand.process(BGR_cropFrame)
@@ -66,18 +68,23 @@ class Hand():
            self.bounding_box_points[1].reset()
         
         if hand_landmark.multi_hand_landmarks:
-            self.draw_landmarks(frame, cropFrame, box, hand_landmark)
+            self.draw_landmarks(frame, cropFrame, box, hand_landmark, time)
             self.success += 1
             
         else:
             [x_min_e, y_min_e] = self.bounding_box_points[0].positions[-1]
             [x_max_e, y_max_e] = self.bounding_box_points[1].positions[-1]
             self.draw_box(frame, x_min_e, y_min_e, x_max_e, y_max_e)
+            # hP_est = self.handPath.estimateNextPoint()
+            # self.handPath.addPos(hP_est[0],hP_est[1], time)
+        
+        cv2.imshow('cropped',cropFrame)
+        frame = self.draw_path(frame, self.handPath.getPath())
         
         return frame
     
     
-    def processFull(self, frame):
+    def processFull(self, frame, time):
         
         BGR_fullFrame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         hand_landmark = self.Hand.process(BGR_fullFrame)
@@ -85,7 +92,7 @@ class Hand():
         
         if hand_landmark.multi_hand_landmarks:
             self.success += 1
-            self.draw_landmarks(frame, frame, (0,0,w,h), hand_landmark)
+            self.draw_landmarks(frame, frame, (0,0,w,h), hand_landmark, time)
 
         return frame
     
@@ -122,7 +129,7 @@ class Hand():
         return cropFrame, (min_x, min_y, max_x, max_y)
         
         
-    def draw_landmarks(self, frame, cropFrame, box, handMLM):
+    def draw_landmarks(self, frame, cropFrame, box, handMLM, time):
         h, w = box[3] - box[1], box[2] - box[0]
         
         for handLM in handMLM.multi_hand_landmarks:
@@ -138,16 +145,25 @@ class Hand():
                 x_min = x if x < x_min else x_min
                 y_max = y if y > y_max else y_max
                 y_min = y if y < y_min else y_min
-            
-            
-            self.bounding_box_points[0].addPos(x_min, y_min)
-            self.bounding_box_points[1].addPos(x_max, y_max)
-            self.draw_box(frame, x_min, y_min, x_max, y_max)
                 
-        self.draw.draw_landmarks(cropFrame, handLM, self.hand_model.HAND_CONNECTIONS)
+                
+                if id==8:
+                    self.handPath.addPos(x,y, time)
+            
+            self.bounding_box_points[0].addPos(x_min, y_min, time)
+            self.bounding_box_points[1].addPos(x_max, y_max, time)
+            self.draw_box(frame, x_min, y_min, x_max, y_max)
+            
+                
+            self.draw.draw_landmarks(cropFrame, handLM, self.hand_model.HAND_CONNECTIONS)
     
     def draw_box(self, frame, x_min,y_min,x_max,y_max):
         frame = cv2.rectangle(frame, (x_min,y_min),(x_max,y_max), (0,255,0),1)
+    
+    def draw_path(self, frame, path):
+        for points in path:
+            frame = cv2.circle(frame, points, 2, (0,0,255), -1)
+        return frame
            
             
             
