@@ -47,25 +47,40 @@ In terms of hand detection accuracy during these tests, the model achieved aroun
 
 ## Visualizations
 
+<p align="center">
+<img src="https://github.com/AllouetteVB/RemoteScan-Recognition/blob/main/ReadmeFiles/TestResults.png" width=50%>
+</p>
+
 There are multiples codes here. We can read the code as follows: {Methods}_{Detection Threshold Change}_{Interpolation Method}
 In the {Methods} category, we can have ‘C’ for cropping method, ‘F’ for full picture method (or no processing method) and ‘M’ for masking method.
 	In the {Detection Threshold Change} category, the attribute scale will modify two things in the program. The first thing is the cropped or masked area. The smaller the scale attribute, the smaller the considered area. But also, the smaller the scale attribute, the smaller the hand detection threshold. This was with the idea of improving detection when there was less information on the picture. As such, the code ‘DTC’ means “Detection threshold changing” referring to the second part and ‘DTF’ means “Detection threshold fixed” to 0.7. Incidentally, when the scaling is of 100, the detection threshold is of 0.7 too.
 	The last part, {Interpolation Method} category, consider the methods to interpolate the next hand position.
 Two algorithms were considered, the first one:
 
+<p align="center">
+<img src="https://github.com/AllouetteVB/RemoteScan-Recognition/blob/main/ReadmeFiles/FirstAlgo.png" width=30%>
+</p>
 
 This algorithm would consider the last position of the hand, and the last hand’s velocity and compute the next position. It would then add a fixed correction as an area around the position. 
 The second algorithm:
+
+<p align="center">
+<img src="https://github.com/AllouetteVB/RemoteScan-Recognition/blob/main/ReadmeFiles/SecondAlgo.png" width=20%>
+</p>
 
 The second algorithm would use a modified Gaussian function dependent on the last position, the velocity, and the scaling to compute a possible area where the hand could be. 
 Considering these two methods, the codes become ’DMD’ when the density function was used as the interpolation algorithm, and ‘DMS’ when the simpler one was used.
 Incidentally, the comparison between the two methods gives the density one better.
 
+<p align="center">
+<img src="https://github.com/AllouetteVB/RemoteScan-Recognition/blob/main/ReadmeFiles/AlgosCompare.png" width=70%>
+</p>
 
-Figure 4 Comparison between the interpolation algorithms
+On the signature results, here is the signature of the benchmark video.
 
-On the signature results, here is the signature on the benchmark video.
-
+<p align="center">
+<img src="https://github.com/AllouetteVB/RemoteScan-Recognition/blob/main/ReadmeFiles/FinalResult.png" width=60%>
+</p>
 
 The right picture is noisier than the left one even when it had better measurements before.
 
@@ -84,35 +99,58 @@ One interesting finding was that preprocessing techniques, which theoretically s
 ## Repository Structure
 
 The project repository is organized into several key directories and programming files to streamline development and testing:
+
 •	Signature CSV: Stores CSV files of signature point coordinates.
+
 •	Signatures Plots: Includes plots of the signatures derived from the benchmark tests.
+
 •	Video: Houses various benchmark videos used for testing.
+
 •	StereoDepth: House various test with stereo vision. The file inside are not documented.
+
 •	Programming files are located outside these folders and are essential for running different components of the project.
 
 ## Primary and Secondary Files
+
 •	Secondary Files:
+
 •	Result_plotting: Responsible for displaying live demo signatures.
+
 •	Signature_graphs: Generates plots for benchmark signatures.
 
+
 •	Primary Files:
+
 •	Camera: Manages camera-related tasks.
+
 •	Hand: Handles the hand recognition model tasks.
+
 •	Point: Manages saving of point data and interpolation of the next point positions.
+
 •	Depth: Attempts to handle depth-related tasks for computing the monocular depth of the finger position.
+
 •	BezierCurves: Responsible for smoothing the signature curves using Bézier curve techniques.
+
 •	Main: Integrates all components and manages the overall process.
+
 These files are mostly documented.
 
 ## Dependencies
 
 The project utilizes several external libraries and frameworks:
+
 •	MediaPipe: For the hand recognition model.
+
 •	OpenCV2: For camera management.
+
 •	Bezier, Simpy: For generating Bézier curves.
+
 •	Numpy, Torch, Scipy: Used primarily for depth calculation tasks.
+
 •	Matplotlib: For generating plots and visualizations.
+
 •	Pandas: For exporting data to CSV format.
+
 •	time, threading: For managing timing and parallel processes.
 
 ## Setup Instructions
@@ -122,21 +160,28 @@ To set up the project environment, follow these general steps:
 3.	Navigate to the project directory.
 
 ## Running the Project
+
 •	To start the project, run the`Main` script. This script integrates all components and initiates the hand tracking and signature processing functionalities.
 
 # Challenges and Limitations
 ## Known Issues
 
 While there are no bugs in the implementation, several issues impact the reliability and effectiveness of the project:
+
 •	Path Detection: The hand path detection isn't 100% reliable, occasionally resulting in noisy signatures.
+
 •	Hand Detection: Limited visibility or clarity of the hand reduces the hand detection rate.
+
 •	Depth Computation: Challenges persist in accurately calculating the depth of the hand in the scene.
+
 •	Curve Smoothing: Current methods for smoothing the signature curve need refinement.
+
 •	Signature Distortion: Distortions in the signature occur due to inadequate camera calibration.
 
 ## Areas for Improvement
 
 •	Hand Detection and Path Prediction: Enhanced research or additional training may improve hand detection accuracy. However, predicting the hand's next position during random movements like signatures remains challenging.
+
 •	Depth Estimation: Three methods were explored:
 1.	Stereo Vision: Initial attempts using two cameras with epipolar geometry failed, likely due to mismatched camera specifications.
 2.	Monocular Depth Estimation: While this approach provided a depth map, it was either imprecise or computationally intensive for live applications.
@@ -145,14 +190,19 @@ While there are no bugs in the implementation, several issues impact the reliabi
 Further attempts might reconsider the stereo vision approach, focusing on using identical cameras as studies seems to show this approach possible. Otherwise, the add of a third camera and triangulation will of course work…
 
 
+
 •	Curve Smoothing: Further experimentation with various smoothing techniques could enhance the quality without losing significant data.
+
 •	Camera Calibration: Improvements in camera calibration, potentially using a professionally manufactured chessboard, could reduce signature distortions.
 
 ## Limitations
 
 The project faces inherent technological limitations:
+
 •	Hardware Requirements: The need for one or two high-quality cameras and the computational power to run complex models adds significant cost.
+
 •	Model Costs: Licensing or development costs associated with advanced models may be prohibitive for live applications.
+
 •	Economic Constraints: In a cost-sensitive industry, these financial and technological barriers significantly challenge the widespread adoption and practical implementation of this technology.
 
 # Conclusion
@@ -164,17 +214,29 @@ Achievements and Impact: The project successfully implemented a system capable o
 Future Work: Future enhancements could include refining hand detection algorithms, exploring more reliable depth estimation methods, and improving the calibration of the system to reduce distortions. These improvements could further enhance the system's accuracy and reliability, making it more adaptable to diverse application scenarios. Additionally, the exploration of cost-effective hardware solutions could make the technology more accessible for widespread use.
 
 # Appendices
-•	Glossary
+
+## Glossary
+
 No information to add.
-•	References
+
+## References
+
 This report was written using ChatGPT4. https://chat.openai.com/share/9508c10c-368f-4635-91ce-d10752986b71 
+
 A trello was used for paper information sharing https://trello.com/b/d19CRSw7/signature-recogition 
+
 Another one for task advancement sharing https://trello.com/b/QR4xOhmA/remotescan-recognition
+
 The previous project work github https://github.com/FallenElias/Finger_AirSigning_Project
+
 Stereovision approach possibility https://learnopencv.com/depth-perception-using-stereo-camera-python-c/
-•	Contact Information
-This work was done under Alexander Gravoski tutoring.
-•	Group teamwork
+
+## Contact Information
+
+This work was done under Alexander Gravoski's tutoring.
+
+## Group teamwork
+
 Testing, Code, Repository architecture, Documentation: Victor
 
 
